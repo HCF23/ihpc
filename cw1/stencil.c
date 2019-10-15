@@ -6,10 +6,9 @@
 // Define output file name
 #define OUTPUT_FILE "stencil.pgm"
 #define mNoTen (10)
-#define mNoCacheLineSize (64)
 
 void stencil(const int nx, const int ny, const int width, const int height,
-		double* image, double* tmp_image);
+             double* image, double* tmp_image);
 void init_image(const int nx, const int ny, const int width, const int height,
                 double* image, double* tmp_image);
 void output_image(const char* file_name, const int nx, const int ny,
@@ -35,14 +34,11 @@ int main(int argc, char* argv[])
   int height = ny + 2;
 
   // Allocate the image
-  // in an aligned fashion, sizeof(double) = 8 [bytes] using posix_memalign or
-  //  _mm_malloc(SIZE, CACHE_LINE_SIZE)
-  double* __restrict__ image =
-	 (double *) _mm_malloc(sizeof(double) * width * height, mNoCacheLineSize/2);
-  double* __restrict__ tmp_image =
-	 (double *) _mm_malloc(sizeof(double) * width * height, mNoCacheLineSize/2);
+  // in an aligned fashion, sizeof(double) = 8 [bytes] using posix_memalign or _mm_something
+  double* image = malloc(sizeof(double) * width * height);
+  double* tmp_image = malloc(sizeof(double) * width * height);
 
-  // Set the input image`:
+  // Set the input image
   init_image(nx, ny, width, height, image, tmp_image);
 
   // Call the stencil kernel
@@ -61,84 +57,58 @@ int main(int argc, char* argv[])
   }
 
   // Ouptut program run args and runtime 
-  printf("%d;%d;%d;%lf\n", nx, ny, niters, (toc - tic)); 
-  fprintf(fp, "%d;%d;%d;%lf\n", nx, ny, niters, (toc - tic)); 
+  printf("%d;%d;%d;%lf", nx, ny, niters, (toc - tic)); 
+  fprintf(fp, "%d;%d;%d;%lf", nx, ny, niters, (toc - tic)); 
   fclose(fp);
 
   output_image(OUTPUT_FILE, nx, ny, width, height, image);
-  _mm_free(image);
-  _mm_free(tmp_image);
+  free(image);
+  free(tmp_image);
 }
 
-__inline__ void stencil(const int nx, const int ny,
-			const int width, const int height,
-             		double* __restrict__ image, 
-			double* __restrict__ tmp_image)
+
+void stencil(const int nx, const int ny, const int width, const int height,
+             double* /*restrict*/ image, 
+	     double* /*restrict*/ tmp_image)
 {
-  __assume_aligned(image, mNoCacheLineSize);
-  __assume_aligned(tmp_image, mNoCacheLineSize);
+  __assume_aligned(image, 64);
+  __assume_aligned(tmp_image, 64);
 
-  __assume(nx % mNoCacheLineSize == 0);
-  __assume(ny % mNoCacheLineSize == 0);
-  __assume(height % mNoCacheLineSize == 0);
+  __assume(nx%64==0);
+  __assume(ny%64==0);
+  __assume(height%64==0);
 
-  //reference image[j+i*(ny+2)] has unaligned acces
-	
-//if tile size == cache line size
-//should be able to vectorise as well as tile
-//so long as the data is aligned to 64
-//therefore
-//match memory as it was initialised
-//to ensure maximal alignment and vectorisation 
-//  FILE* fp = fopen("iteration_vars_vec_tiled.txt","a");
-  for (int jb = 0; jb < ny; jb+=mNoCacheLineSize) {
-    for (int ib = 0; ib < nx; ib+=mNoCacheLineSize) {
+  //reference image[j+i*(ny+2)] has unaligned access
 
-      const int jlim = (jb + mNoCacheLineSize > ny) ? ny : jb + mNoCacheLineSize;
-      const int ilim = (ib + mNoCacheLineSize > nx) ? nx : ib + mNoCacheLineSize;
-//1024;1024;100;0.890782
-#pragma vector always //1024;1024;100;0.906800     -> CONCLUSION: memory is not aligned
-        for (int j = jb + 1; j < jlim + 1; ++j) {          
-	  for (int i = ib + 1; i < ilim + 1; ++i) {
-	     tmp_image[j + i * height] =
-		(image[j + i       * height] * 0.6)    + 
-		(image[j + (i+1) * height] / mNoTen) + \
-		(image[j + (i-1) * height] / mNoTen) + \
-		(image[j - 1 + i       * height] / mNoTen) + \
-		(image[j + 1 + i       * height] / mNoTen);
-
-/* REVERSE THE ORDER */
-/*  for (int jb = ny; jb >= 0; jb -= mNoCacheLineSize) {
-    for (int ib = nx; ib >= 0; ib -= mNoCacheLineSize) {
-      const int jlim = (jb <= 0) ? 0 : jb - mNoCacheLineSize;
-      const int ilim = (ib <= 0) ? 0 : ib - mNoCacheLineSize;
-//1024;1024;100;1.117163
-#pragma vector always //1024;1024;100;1.118145
-
-        for (int j = jb; j > jlim ; --j) {          
-	  for (int i = ib ; i > ilim; --i) {
-	     tmp_image[j + i * height] =
-		(image[j + i       * height] * 0.6)    + 
-		(image[j + (i+1) * height] / mNoTen) + \
-		(image[j + (i-1) * height] / mNoTen) + \
-		(image[j - 1 + i       * height] / mNoTen) + \
-		(image[j + 1 + i       * height] / mNoTen);
-*/
-		//fprintf(fp, "(%d)(%d)\t%d\t%d\t%d\t%d\t%d\n",\
-						(j),\
-						(i),\
-						(j+i*height),\
-						(j+(i-1)*height),\
-						(j+(i+1)*height),\
-						(j-1+i*height),\
-						(j+1+i*height)\
-						);
-    } 
+  for (int j = 1; j < ny + 1; ++j) {
+    for (int i = 1; i < nx + 1; ++i) {
+      tmp_image[j     + i       * height] = 
+ 	 (image[j     + i       * height] * 0.6) + \
+	 (image[j     + (i - 1) * height] / mNoTen)    + \
+	 (image[j     + (i + 1) * height] / mNoTen)    + \
+	 (image[j - 1 + i       * height] / mNoTen)    + \
+	 (image[j + 1 + i       * height] / mNoTen);
    }
   }
- }
-// fclose(fp);
 }
+/*
+LOOP BEGIN at stencil.c(104,11) inlined into stencil.c(42,3)
+	remark #15329: vectorization support:
+		 non-unit strided store was emulated for 	
+		 the variable <image[j+i*(ny+2)]>, 
+		 stride is unknown to compiler   [ stencil.c(105,13) ]
+
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15453: unmasked strided stores: 1
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 4
+            remark #15477: vector cost: 3.000
+            remark #15478: estimated potential speedup: 1.320
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+*/
 
 // Create the input image
 void init_image(const int nx, const int ny, const int width, const int height,
@@ -158,9 +128,8 @@ void init_image(const int nx, const int ny, const int width, const int height,
     for (int ib = 0; ib < nx; ib += tile_size) {
       if ((ib + jb) % (tile_size * 2)) {
         const int jlim = (jb + tile_size > ny) ? ny : jb + tile_size;
-        const int ilim = (ib + tile_size > nx) ? nx : ib + tile_size; 
-#pragma vector always
-	for (int j = jb + 1; j < jlim + 1; ++j) {
+        const int ilim = (ib + tile_size > nx) ? nx : ib + tile_size;
+        for (int j = jb + 1; j < jlim + 1; ++j) {
           for (int i = ib + 1; i < ilim + 1; ++i) {
             image[j + i * height] = 100.0;
           }
