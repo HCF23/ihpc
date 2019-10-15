@@ -1,0 +1,67 @@
+
+simd single intruction multiple data
+
+there is bottleneck for every piece of code
+	what is the limiting resource
+	- architect would provide more of it
+	- coder would code to avoid it
+
+common bottlenecks
+	memory bandwidth
+	floating point resources
+
+vectors improve 
+	ALU use
+	efficient use of memory bandwidth
+		have their own registers
+		frees up reaources elsewhere
+	note parallel still uses machine resources
+		so save time not machine usage
+
+instead of load n elements one by one
+load n
+
+float const restrict * x
+- says to compiler "i wont alias vars"
+	ie pass in a var called x
+		to a function(arg x)
+
+align your data
+
+omp simd
+	omp simd aligned
+		give info
+	-fopenmp-simd
+	omp simd (#pragma omp simd)
+intel advisor
+	DOWNLOAD THIS NOW
+	can see FLOPs 
+
+struturise.elements
+	might end with misalignment
+Structure of array of elements
+
+x86 intrinsics for machine dependent code
+
+intel math kernel library
+look for BLAS libes
+look hodbolt
+vectorise libes are about
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

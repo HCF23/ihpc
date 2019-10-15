@@ -1,0 +1,38 @@
+gprof
+godbolt
+gcc -O flags
+== -mtune=native
+make use of L1 cache
+especially oft used code
+think about data reuse, datum size, reduce data movement, cache is non-addr
+cache is 64bytes = 8*doubles
+avoid cache thrashing
+perf profiler should catch this
+use cache in row major order V column major
+
+>>>>
+>>>>
+>>>>
+
+
+V
+
+VVVV
+VVVV
+VVVV
+
+notice in column that per element there is a whole row jumped
+use row major order
+choose loop structure accordingly
+this helps prefetching
+THINK of dot product example
+
+some O(n) shit is required
+=FLOPS/memory_access
+
+do tiling
+ie breaks alg blocks into "tiles"
+work on a tile all in cache
+move on to next "tile"
+
+

@@ -1,0 +1,4 @@
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.016 MB /tmp/amplxe-tmp-nj19451/amplxe-res-19225-42983788367525648/data.0/temp.sync.perf (~701 samples) ]
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.016 MB /tmp/amplxe-tmp-nj19451/amplxe-res-19225-42983788367525648/data.0/temp.sync.perf (~701 samples) ]

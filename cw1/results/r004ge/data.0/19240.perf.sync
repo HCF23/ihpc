@@ -1,0 +1,21 @@
+VTune Linux Perf Time Sync: 1
+VTune Start SYS 6316569210895111:6316569210954575:6316569211008518:6316569211062155:6316569211115795:6316569211169677:6316569211223344:6316569211276962
+ amplxe-perf-syn 19249 6316466.821572: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19249 6316466.823551: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19249 6316466.823607: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19249 6316466.823660: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19249 6316466.823714: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19249 6316466.823768: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19249 6316466.823821: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19249 6316466.823875: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19249 6316466.823929: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+VTune End SYS 6316570143935067:6316570143999136:6316570144054851:6316570144110227:6316570144165465:6316570144220763:6316570144276062:6316570144331382
+ amplxe-perf-syn 19257 6316467.753518: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19257 6316467.756578: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19257 6316467.756637: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19257 6316467.756692: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19257 6316467.756747: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19257 6316467.756803: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19257 6316467.756858: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19257 6316467.756913: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])
+ amplxe-perf-syn 19257 6316467.756968: context-switches:  ffffffff8168bbb9 schedule ([kernel.kallsyms])

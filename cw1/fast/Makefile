@@ -1,0 +1,8 @@
+stencil: stencil.c
+	icc -std=c99 -fast -Wall -qopt-report-phase=vec,loop -qopt-report=5 -qopt-report-file=compile.out -restrict -xCORE-AVX2 -parallel $^ -o stencil_vec_report
+	icc -g -std=c99 -fast -Wall  $^ -o stencil_dbg
+	icc -std=c99 -fast -Wall -qopenmp-simd -xCORE-AVX2 -parallel $^ -o stencil
+
+
+
+

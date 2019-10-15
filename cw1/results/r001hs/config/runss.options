@@ -1,0 +1,14 @@
+-r
+/mnt/storage/home/nj19451/intro_hpc/cw1/r001hs
+--stack-stitching
+--data-limit-mb=500
+--disk-space-limit=100
+--mrte-type=java,python
+--itt-config=frame
+--stackwalk=offline
+--mrte-mode=auto
+--type=cpu:counters:nostack
+--type=cpu:stack
+--interval=10
+--
+./stencil

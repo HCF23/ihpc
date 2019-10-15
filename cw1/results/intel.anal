@@ -1,0 +1,503 @@
+==================================================================
+= FILE CONTENTS:
+== runtime
+== vtune report
+== vectorisation report
+==================================================================
+
+
+
+
+------------------------------------
+ runtime: 0.198511 s
+------------------------------------
+
+Collection and Platform Info
+----------------------------
+Parameter                 r003hs                                                                                                                                                                                                                                                                                                                                                                                                                             
+------------------------  -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Application Command Line  ./stencil "1024" "1024" "100"                                                                                                                                                                                                                                                                                                                                                                                                      
+Operating System          3.10.0-514.10.2.el7.x86_64 NAME="CentOS Linux"
+VERSION="7 (Core)"
+ID="centos"
+ID_LIKE="rhel fedora"
+VERSION_ID="7"
+PRETTY_NAME="CentOS Linux 7 (Core)"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:centos:centos:7"
+HOME_URL="https://www.centos.org/"
+BUG_REPORT_URL="https://bugs.centos.org/"
+
+CENTOS_MANTISBT_PROJECT="CentOS-7"
+CENTOS_MANTISBT_PROJECT_VERSION="7"
+REDHAT_SUPPORT_PRODUCT="centos"
+REDHAT_SUPPORT_PRODUCT_VERSION="7"
+
+Computer Name             bc4login5.bc4.acrc.priv                                                                                                                                                                                                                                                                                                                                                                                                            
+Result Size               2327810                                                                                                                                                                                                                                                                                                                                                                                                                            
+Collection start time     17:19:24 11/10/2019 UTC                                                                                                                                                                                                                                                                                                                                                                                                            
+Collection stop time      17:19:24 11/10/2019 UTC                                                                                                                                                                                                                                                                                                                                                                                                            
+
+CPU
+---
+Parameter          r003hs                                            
+-----------------  --------------------------------------------------
+Name               Intel(R) Xeon(R) Processor code named Broadwell-EP
+Frequency          2199998813                                        
+Logical CPU Count  20                                                
+
+Summary
+-------
+Elapsed Time:       0.231
+CPU Time:           0.220
+Average CPU Usage:  0.959
+
+
+[nj19451@bc4login5 cw1]$ amplxe-cl -collect general-exploration ./stencil 1024 1024 100
+amplxe: Warning: To profile kernel modules during the session, make sure they are available in the /lib/modules/kernel_version/ location.
+amplxe: Collection started. To stop the collection, either press CTRL-C or enter from another console window: amplxe-cl -r /mnt/storage/home/nj19451/intro_hpc/cw1/r004ge -command stop.
+------------------------------------
+ runtime: 0.239435 s
+------------------------------------
+amplxe: Collection stopped.
+amplxe: Using result path `/mnt/storage/home/nj19451/intro_hpc/cw1/r004ge'
+amplxe: Executing actions 21 % Resolving information for `vmlinux'             
+amplxe: Warning: %CantOpenFile
+amplxe: Executing actions 75 % Generating a report                             
+Elapsed Time: 0.286s
+    Clockticks: 475,200,000
+    Instructions Retired: 440,000,000
+    CPI Rate: 1.080
+     | The CPI may be too high. This could be caused by issues such as memory
+     | stalls, instruction starvation, branch misprediction or long latency
+     | instructions. Explore the other hardware-related metrics to identify what
+     | is causing high CPI.
+     |
+    MUX Reliability
+    Front-End Bound: 20.8% of Pipeline Slots
+     | A significant proportion of pipeline slots are remaining empty. Possible
+     | reasons include a large code working size, poor code layout (requiring
+     | too many memory accesses per cycle to get sufficient instructions to fill
+     | four pipeline slots), or microcode assists.
+     |
+        Front-End Latency: 0.0% of Pipeline Slots
+            ICache Misses: 0.0% of Clockticks
+            ITLB Overhead: 0.0% of Clockticks
+            Branch Resteers: 0.0% of Clockticks
+            DSB Switches: 0.0% of Clockticks
+            Length Changing Prefixes: 0.0% of Clockticks
+            MS Switches: 0.0% of Clockticks
+        Front-End Bandwidth: 20.8% of Pipeline Slots
+            Front-End Bandwidth MITE: 0.0% of Clockticks
+            Front-End Bandwidth DSB: 0.0% of Clockticks
+            Front-End Bandwidth LSD: 0.0% of Clockticks
+    Bad Speculation: 0.0% of Pipeline Slots
+        Branch Mispredict: 0.0% of Pipeline Slots
+        Machine Clears: 0.0% of Pipeline Slots
+    Back-End Bound: 79.2% of Pipeline Slots
+     | Identify slots where no uOps are delivered due to a lack of required
+     | resources for accepting more uOps in the back-end of the pipeline. Back-
+     | end metrics describe a portion of the pipeline where the out-of-order
+     | scheduler dispatches ready uOps into their respective execution units,
+     | and, once completed, these uOps get retired according to program order.
+     | Stalls due to data-cache misses or stalls due to the overloaded divider
+     | unit are examples of back-end bound issues.
+     |
+        Memory Bound: 0.0% of Pipeline Slots
+            L1 Bound: 0.0% of Clockticks
+                DTLB Overhead: 0.0% of Clockticks
+                Loads Blocked by Store Forwarding: 0.0% of Clockticks
+                Lock Latency: 0.0% of Clockticks
+                Split Loads
+                4K Aliasing: 0.0% of Clockticks
+                FB Full
+            L2 Bound: 0.0% of Clockticks
+            L3 Bound: 0.0% of Clockticks
+                Contested Accesses: 0.0% of Clockticks
+                Data Sharing: 0.0% of Clockticks
+                L3 Latency: 0.0% of Clockticks
+                SQ Full: 0.0% of Clockticks
+            DRAM Bound: 0.0% of Clockticks
+                Memory Bandwidth: 0.0% of Clockticks
+                Memory Latency: 0.0% of Clockticks
+                    Local DRAM: 0.0% of Clockticks
+                    Remote DRAM: 0.0% of Clockticks
+                    Remote Cache: 0.0% of Clockticks
+            Store Bound: 0.0% of Clockticks
+                Store Latency: 0.0% of Clockticks
+                Split Stores: 0.0% of Clockticks
+                DTLB Store Overhead: 0.0% of Clockticks
+        Core Bound: 79.2% of Pipeline Slots
+         | This metric represents how much Core non-memory issues were of a
+         | bottleneck. Shortage in hardware compute resources, or dependencies
+         | software's instructions are both categorized under Core Bound. Hence
+         | it may indicate the machine ran out of an OOO resources, certain
+         | execution units are overloaded or dependencies in program's data- or
+         | instruction- flow are limiting the performance (e.g. FP-chained long-
+         | latency arithmetic operations).
+         |
+            Divider: 0.0% of Clockticks
+            Port Utilization: 0.0% of Clockticks
+                Cycles of 0 Ports Utilized: 0.0% of Clockticks
+                Cycles of 1 Port Utilized: 0.0% of Clockticks
+                Cycles of 2 Ports Utilized: 0.0% of Clockticks
+                Cycles of 3+ Ports Utilized: 0.0% of Clockticks
+                    Port 0: 0.0% of Clockticks
+                    Port 1: 0.0% of Clockticks
+                    Port 2: 0.0% of Clockticks
+                    Port 3: 0.0% of Clockticks
+                    Port 4: 0.0% of Clockticks
+                    Port 5: 0.0% of Clockticks
+                    Port 6: 0.0% of Clockticks
+                    Port 7: 0.0% of Clockticks
+    Retiring: 0.0% of Pipeline Slots
+        General Retirement: 0.0% of Pipeline Slots
+            FP Arithmetic
+                FP x87: 0.0% of uOps
+                FP Scalar
+                FP Vector
+            Other
+        Microcode Sequencer: 0.0% of Pipeline Slots
+            Assists: 0.0% of Clockticks
+    Total Thread Count: 2
+    Paused Time: 0s
+Collection and Platform Info
+    Application Command Line: ./stencil "1024" "1024" "100" 
+    Operating System: 3.10.0-514.10.2.el7.x86_64 NAME="CentOS Linux" VERSION="7 (Core)" ID="centos" ID_LIKE="rhel fedora" VERSION_ID="7" PRETTY_NAME="CentOS Linux 7 (Core)" ANSI_COLOR="0;31" CPE_NAME="cpe:/o:centos:centos:7" HOME_URL="https://www.centos.org/" BUG_REPORT_URL="https://bugs.centos.org/"  CENTOS_MANTISBT_PROJECT="CentOS-7" CENTOS_MANTISBT_PROJECT_VERSION="7" REDHAT_SUPPORT_PRODUCT="centos" REDHAT_SUPPORT_PRODUCT_VERSION="7" 
+    Computer Name: bc4login5.bc4.acrc.priv
+    Result Size: 2 MB 
+    Collection start time: 17:25:58 11/10/2019 UTC
+    Collection stop time: 17:25:59 11/10/2019 UTC
+    Name: Intel(R) Xeon(R) Processor code named Broadwell-EP
+    Frequency: 2.200 GHz
+    Logical CPU Count: 20
+    CPU
+        Name: Intel(R) Xeon(R) Processor code named Broadwell-EP
+        Frequency: 2.200 GHz
+        Logical CPU Count: 20
+
+If you want to skip descriptions of detected performance issues in the report,
+enter: amplxe-cl -report summary -report-knob show-issues=false -r
+<my_result_dir>. Alternatively, you may view the report in the csv format:
+amplxe-cl -report <report_name> -format=csv.
+
+
+amplxe: Executing actions 100 % done       
+
+
+
+
+
+
+
+icc -std=c99 -fast -Wall -qopt-report-phase=vec -qopt-report=5 -qopt-report-file=stdout -restrict stencil.c -o stencil
+stencil.c(61): warning #650: this pragma must immediately precede a statement
+  #pragma vector aligned
+          ^
+
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 17.0.1.132 Build 20161005
+
+Compiler options: -std=c99 -fast -Wall -qopt-report-phase=vec -qopt-report=5 -qopt-report-file=stdout -restrict -o stencil
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 17.0.1.132 Build 20161005
+
+Compiler options: -std=c99 -fast -Wall -qopt-report-phase=vec -qopt-report=5 -qopt-report-file=stdout -restrict -o stencil
+
+Begin optimization report for: main(int, char **)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at stencil.c(89,3) inlined into stencil.c(42,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at stencil.c(90,5) inlined into stencil.c(42,3)
+      remark #15329: vectorization support: non-unit strided store was emulated for the variable <image[j+i*(ny+2)]>, stride is unknown to compiler   [ stencil.c(91,7) ]
+      remark #15329: vectorization support: non-unit strided store was emulated for the variable <tmp_image[j+i*(ny+2)]>, stride is unknown to compiler   [ stencil.c(92,7) ]
+      remark #15305: vectorization support: vector length 2
+      remark #15399: vectorization support: unroll factor set to 4
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15453: unmasked strided stores: 2 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 7 
+      remark #15477: vector cost: 6.000 
+      remark #15478: estimated potential speedup: 1.160 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at stencil.c(90,5) inlined into stencil.c(42,3)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at stencil.c(98,3) inlined into stencil.c(42,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at stencil.c(99,5) inlined into stencil.c(42,3)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at stencil.c(103,9) inlined into stencil.c(42,3)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at stencil.c(104,11) inlined into stencil.c(42,3)
+            remark #15329: vectorization support: non-unit strided store was emulated for the variable <image[j+i*(ny+2)]>, stride is unknown to compiler   [ stencil.c(105,13) ]
+            remark #15305: vectorization support: vector length 2
+            remark #15399: vectorization support: unroll factor set to 4
+            remark #15300: LOOP WAS VECTORIZED
+            remark #15453: unmasked strided stores: 1 
+            remark #15475: --- begin vector cost summary ---
+            remark #15476: scalar cost: 4 
+            remark #15477: vector cost: 3.000 
+            remark #15478: estimated potential speedup: 1.320 
+            remark #15488: --- end vector cost summary ---
+         LOOP END
+
+         LOOP BEGIN at stencil.c(104,11) inlined into stencil.c(42,3)
+         <Remainder loop for vectorization>
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at stencil.c(73,5) inlined into stencil.c(47,5)
+<Distributed chunk1>
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at stencil.c(73,5) inlined into stencil.c(47,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at stencil.c(73,5) inlined into stencil.c(47,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at stencil.c(73,5) inlined into stencil.c(47,5)
+         <Distributed chunk1>
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization
+            remark #15346: vector dependence: assumed OUTPUT dependence between tmp_image[j+i*(ny+2)] (74:7) and tmp_image[j+i*(ny+2)] (74:7)
+            remark #15346: vector dependence: assumed OUTPUT dependence between tmp_image[j+i*(ny+2)] (74:7) and tmp_image[j+i*(ny+2)] (74:7)
+
+            LOOP BEGIN at stencil.c(46,3)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed OUTPUT dependence between tmp_image[j+i*(ny+2)] (74:7) and tmp_image[j+i*(ny+2)] (74:7)
+               remark #15346: vector dependence: assumed OUTPUT dependence between tmp_image[j+i*(ny+2)] (74:7) and tmp_image[j+i*(ny+2)] (74:7)
+
+               LOOP BEGIN at stencil.c(72,3) inlined into stencil.c(47,5)
+                  remark #15344: loop was not vectorized: vector dependence prevents vectorization
+                  remark #15346: vector dependence: assumed OUTPUT dependence between tmp_image[j+i*(ny+2)] (74:7) and tmp_image[j+i*(ny+2)] (74:7)
+                  remark #15346: vector dependence: assumed OUTPUT dependence between tmp_image[j+i*(ny+2)] (74:7) and tmp_image[j+i*(ny+2)] (74:7)
+               LOOP END
+            LOOP END
+
+            LOOP BEGIN at stencil.c(46,3)
+            <Remainder>
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed OUTPUT dependence between tmp_image[j+i*(ny+2)] (74:7) and tmp_image[j+i*(ny+2)] (74:7)
+               remark #15346: vector dependence: assumed OUTPUT dependence between tmp_image[j+i*(ny+2)] (74:7) and tmp_image[j+i*(ny+2)] (74:7)
+
+               LOOP BEGIN at stencil.c(72,3) inlined into stencil.c(47,5)
+                  remark #15344: loop was not vectorized: vector dependence prevents vectorization
+                  remark #15346: vector dependence: assumed OUTPUT dependence between tmp_image[j+i*(ny+2)] (74:7) and tmp_image[j+i*(ny+2)] (74:7)
+                  remark #15346: vector dependence: assumed OUTPUT dependence between tmp_image[j+i*(ny+2)] (74:7) and tmp_image[j+i*(ny+2)] (74:7)
+               LOOP END
+            LOOP END
+         LOOP END
+
+         LOOP BEGIN at stencil.c(73,5) inlined into stencil.c(47,5)
+         <Remainder, Distributed chunk1>
+            remark #15542: loop was not vectorized: inner loop was already vectorized
+
+            LOOP BEGIN at stencil.c(46,3)
+               remark #15542: loop was not vectorized: inner loop was already vectorized
+
+               LOOP BEGIN at stencil.c(72,3) inlined into stencil.c(47,5)
+                  remark #15389: vectorization support: reference tmp_image[j+i*(ny+2)] has unaligned access   [ stencil.c(74,7) ]
+                  remark #15389: vectorization support: reference image[j+i*(ny+2)] has unaligned access   [ stencil.c(75,3) ]
+                  remark #15389: vectorization support: reference image[j+(i-1)*(ny+2)] has unaligned access   [ stencil.c(76,3) ]
+                  remark #15389: vectorization support: reference image[j+(i+1)*(ny+2)] has unaligned access   [ stencil.c(77,3) ]
+                  remark #15389: vectorization support: reference image[j-1+i*(ny+2)] has unaligned access   [ stencil.c(78,3) ]
+                  remark #15389: vectorization support: reference image[j+1+i*(ny+2)] has unaligned access   [ stencil.c(79,3) ]
+                  remark #15381: vectorization support: unaligned access used inside loop body
+                  remark #15305: vectorization support: vector length 4
+                  remark #15399: vectorization support: unroll factor set to 4
+                  remark #15309: vectorization support: normalized vectorization overhead 0.161
+                  remark #15301: PERMUTED LOOP WAS VECTORIZED
+                  remark #15450: unmasked unaligned unit stride loads: 5 
+                  remark #15451: unmasked unaligned unit stride stores: 1 
+                  remark #15475: --- begin vector cost summary ---
+                  remark #15476: scalar cost: 27 
+                  remark #15477: vector cost: 7.000 
+                  remark #15478: estimated potential speedup: 3.570 
+                  remark #15488: --- end vector cost summary ---
+               LOOP END
+
+               LOOP BEGIN at stencil.c(72,3) inlined into stencil.c(47,5)
+               <Remainder loop for vectorization>
+                  remark #15389: vectorization support: reference tmp_image[j+i*(ny+2)] has unaligned access   [ stencil.c(74,7) ]
+                  remark #15389: vectorization support: reference image[j+i*(ny+2)] has unaligned access   [ stencil.c(75,3) ]
+                  remark #15389: vectorization support: reference image[j+(i-1)*(ny+2)] has unaligned access   [ stencil.c(76,3) ]
+                  remark #15389: vectorization support: reference image[j+(i+1)*(ny+2)] has unaligned access   [ stencil.c(77,3) ]
+                  remark #15389: vectorization support: reference image[j-1+i*(ny+2)] has unaligned access   [ stencil.c(78,3) ]
+                  remark #15389: vectorization support: reference image[j+1+i*(ny+2)] has unaligned access   [ stencil.c(79,3) ]
+                  remark #15381: vectorization support: unaligned access used inside loop body
+                  remark #15305: vectorization support: vector length 4
+                  remark #15309: vectorization support: normalized vectorization overhead 1.000
+                  remark #15301: REMAINDER LOOP WAS VECTORIZED
+               LOOP END
+
+               LOOP BEGIN at stencil.c(72,3) inlined into stencil.c(47,5)
+               <Remainder loop for vectorization>
+               LOOP END
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at stencil.c(73,5) inlined into stencil.c(48,5)
+<Distributed chunk2>
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at stencil.c(73,5) inlined into stencil.c(48,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at stencil.c(73,5) inlined into stencil.c(48,5)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at stencil.c(73,5) inlined into stencil.c(48,5)
+         <Distributed chunk2>
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization
+            remark #15346: vector dependence: assumed OUTPUT dependence between image[j+i*(ny+2)] (74:7) and image[j+i*(ny+2)] (74:7)
+            remark #15346: vector dependence: assumed OUTPUT dependence between image[j+i*(ny+2)] (74:7) and image[j+i*(ny+2)] (74:7)
+
+            LOOP BEGIN at stencil.c(46,3)
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed OUTPUT dependence between image[j+i*(ny+2)] (74:7) and image[j+i*(ny+2)] (74:7)
+               remark #15346: vector dependence: assumed OUTPUT dependence between image[j+i*(ny+2)] (74:7) and image[j+i*(ny+2)] (74:7)
+
+               LOOP BEGIN at stencil.c(72,3) inlined into stencil.c(48,5)
+                  remark #15344: loop was not vectorized: vector dependence prevents vectorization
+                  remark #15346: vector dependence: assumed OUTPUT dependence between image[j+i*(ny+2)] (74:7) and image[j+i*(ny+2)] (74:7)
+                  remark #15346: vector dependence: assumed OUTPUT dependence between image[j+i*(ny+2)] (74:7) and image[j+i*(ny+2)] (74:7)
+               LOOP END
+            LOOP END
+
+            LOOP BEGIN at stencil.c(46,3)
+            <Remainder>
+               remark #15344: loop was not vectorized: vector dependence prevents vectorization
+               remark #15346: vector dependence: assumed OUTPUT dependence between image[j+i*(ny+2)] (74:7) and image[j+i*(ny+2)] (74:7)
+               remark #15346: vector dependence: assumed OUTPUT dependence between image[j+i*(ny+2)] (74:7) and image[j+i*(ny+2)] (74:7)
+
+               LOOP BEGIN at stencil.c(72,3) inlined into stencil.c(48,5)
+                  remark #15344: loop was not vectorized: vector dependence prevents vectorization
+                  remark #15346: vector dependence: assumed OUTPUT dependence between image[j+i*(ny+2)] (74:7) and image[j+i*(ny+2)] (74:7)
+                  remark #15346: vector dependence: assumed OUTPUT dependence between image[j+i*(ny+2)] (74:7) and image[j+i*(ny+2)] (74:7)
+               LOOP END
+            LOOP END
+         LOOP END
+
+         LOOP BEGIN at stencil.c(73,5) inlined into stencil.c(48,5)
+         <Remainder, Distributed chunk2>
+            remark #15542: loop was not vectorized: inner loop was already vectorized
+
+            LOOP BEGIN at stencil.c(46,3)
+               remark #15542: loop was not vectorized: inner loop was already vectorized
+
+               LOOP BEGIN at stencil.c(72,3) inlined into stencil.c(48,5)
+                  remark #15389: vectorization support: reference image[j+i*(ny+2)] has unaligned access   [ stencil.c(74,7) ]
+                  remark #15389: vectorization support: reference tmp_image[j+i*(ny+2)] has unaligned access   [ stencil.c(75,3) ]
+                  remark #15389: vectorization support: reference tmp_image[j+(i-1)*(ny+2)] has unaligned access   [ stencil.c(76,3) ]
+                  remark #15389: vectorization support: reference tmp_image[j+(i+1)*(ny+2)] has unaligned access   [ stencil.c(77,3) ]
+                  remark #15389: vectorization support: reference tmp_image[j-1+i*(ny+2)] has unaligned access   [ stencil.c(78,3) ]
+                  remark #15389: vectorization support: reference tmp_image[j+1+i*(ny+2)] has unaligned access   [ stencil.c(79,3) ]
+                  remark #15381: vectorization support: unaligned access used inside loop body
+                  remark #15305: vectorization support: vector length 4
+                  remark #15399: vectorization support: unroll factor set to 4
+                  remark #15309: vectorization support: normalized vectorization overhead 0.161
+                  remark #15301: PERMUTED LOOP WAS VECTORIZED
+                  remark #15450: unmasked unaligned unit stride loads: 5 
+                  remark #15451: unmasked unaligned unit stride stores: 1 
+                  remark #15475: --- begin vector cost summary ---
+                  remark #15476: scalar cost: 27 
+                  remark #15477: vector cost: 7.000 
+                  remark #15478: estimated potential speedup: 3.570 
+                  remark #15488: --- end vector cost summary ---
+               LOOP END
+
+               LOOP BEGIN at stencil.c(72,3) inlined into stencil.c(48,5)
+               <Remainder loop for vectorization>
+                  remark #15389: vectorization support: reference image[j+i*(ny+2)] has unaligned access   [ stencil.c(74,7) ]
+                  remark #15389: vectorization support: reference tmp_image[j+i*(ny+2)] has unaligned access   [ stencil.c(75,3) ]
+                  remark #15389: vectorization support: reference tmp_image[j+(i-1)*(ny+2)] has unaligned access   [ stencil.c(76,3) ]
+                  remark #15389: vectorization support: reference tmp_image[j+(i+1)*(ny+2)] has unaligned access   [ stencil.c(77,3) ]
+                  remark #15389: vectorization support: reference tmp_image[j-1+i*(ny+2)] has unaligned access   [ stencil.c(78,3) ]
+                  remark #15389: vectorization support: reference tmp_image[j+1+i*(ny+2)] has unaligned access   [ stencil.c(79,3) ]
+                  remark #15381: vectorization support: unaligned access used inside loop body
+                  remark #15305: vectorization support: vector length 4
+                  remark #15309: vectorization support: normalized vectorization overhead 1.000
+                  remark #15301: REMAINDER LOOP WAS VECTORIZED
+               LOOP END
+
+               LOOP BEGIN at stencil.c(72,3) inlined into stencil.c(48,5)
+               <Remainder loop for vectorization>
+               LOOP END
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at stencil.c(132,5) inlined into stencil.c(57,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at stencil.c(131,3) inlined into stencil.c(57,3)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at stencil.c(131,3) inlined into stencil.c(57,3)
+      remark #15389: vectorization support: reference image[j+i*(ny+2)] has unaligned access   [ stencil.c(133,11) ]
+      remark #15381: vectorization support: unaligned access used inside loop body
+      remark #15305: vectorization support: vector length 4
+      remark #15399: vectorization support: unroll factor set to 4
+      remark #15309: vectorization support: normalized vectorization overhead 1.450
+      remark #15301: PERMUTED LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15450: unmasked unaligned unit stride loads: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 8 
+      remark #15477: vector cost: 1.250 
+      remark #15478: estimated potential speedup: 4.940 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at stencil.c(131,3) inlined into stencil.c(57,3)
+   <Remainder loop for vectorization>
+      remark #15389: vectorization support: reference image[j+i*(ny+2)] has unaligned access   [ stencil.c(133,11) ]
+      remark #15381: vectorization support: unaligned access used inside loop body
+      remark #15305: vectorization support: vector length 4
+      remark #15309: vectorization support: normalized vectorization overhead 5.333
+      remark #15301: REMAINDER LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at stencil.c(131,3) inlined into stencil.c(57,3)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at stencil.c(138,3) inlined into stencil.c(57,3)
+   remark #15382: vectorization support: call to function fputc(int, FILE *) cannot be vectorized   [ stencil.c(140,7) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed OUTPUT dependence between call:fputc(int, FILE *) (140:7) and call:fputc(int, FILE *) (140:7)
+   remark #15346: vector dependence: assumed OUTPUT dependence between call:fputc(int, FILE *) (140:7) and call:fputc(int, FILE *) (140:7)
+
+   LOOP BEGIN at stencil.c(139,5) inlined into stencil.c(57,3)
+      remark #15527: loop was not vectorized: function call to fputc(int, FILE *) cannot be vectorized   [ stencil.c(140,7) ]
+   LOOP END
+LOOP END
+===========================================================================
+ 
