@@ -1,8 +1,23 @@
 #!/usr/bin/env python3
+import re
 import os
 import sys
 import system
 import getopt
+"""
+def plan:
+	python says "git branch --list"
+	greps the branches
+	saves into list(branches)
+	for branch in branch.items()
+		git checkout branch
+		make
+		iter = 100
+		while iter:
+			./srun
+		read_file()
+"""
+
 
 def read_file():
     dic = {}
@@ -53,8 +68,8 @@ def read_file():
     dic["4096"]["average"] = (dic["4096"]["tot"] / dic["4096"]["cnt"])
     dic["8000"]["average"] = (dic["8000"]["tot"] / dic["8000"]["cnt"])
     print(dic.items())
-    print "\n==============================="
-    print "\ttotal = {0}\taverage = {1}".format(cnt,average)
+    with open("~/results.txt","a") as f:
+	f.write(dic.items())
 
 
 def main(argv):
