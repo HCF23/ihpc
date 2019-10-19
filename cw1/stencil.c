@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <malloc.h>
 
 // Define output file name
 #define OUTPUT_FILE "stencil.pgm"
-#define mNoTen (10)
 
 void stencil(const int nx, const int ny, const int width, const int height,
              double* image, double* tmp_image);
@@ -34,7 +32,6 @@ int main(int argc, char* argv[])
   int height = ny + 2;
 
   // Allocate the image
-  // in an aligned fashion, sizeof(double) = 8 [bytes] using posix_memalign or _mm_something
   double* image = malloc(sizeof(double) * width * height);
   double* tmp_image = malloc(sizeof(double) * width * height);
 
@@ -49,66 +46,29 @@ int main(int argc, char* argv[])
   }
   double toc = wtime();
 
-  // Open output file
-  FILE* fp = fopen("stencil.csv","a");
-  if (!fp) {
-    printf("Error: Could not open \"stencil.csv\"\n");
-    exit(EXIT_FAILURE);
-  }
-
-  // Ouptut program run args and runtime 
-  printf("%d;%d;%d;%lf", nx, ny, niters, (toc - tic)); 
-  fprintf(fp, "%d;%d;%d;%lf", nx, ny, niters, (toc - tic)); 
-  fclose(fp);
+  // Output
+  printf("------------------------------------\n");
+  printf(" runtime: %lf s\n", toc - tic);
+  printf("------------------------------------\n");
 
   output_image(OUTPUT_FILE, nx, ny, width, height, image);
   free(image);
   free(tmp_image);
 }
 
-
 void stencil(const int nx, const int ny, const int width, const int height,
-             double* /*restrict*/ image, 
-	     double* /*restrict*/ tmp_image)
+             double* image, double* tmp_image)
 {
-  __assume_aligned(image, 64);
-  __assume_aligned(tmp_image, 64);
-
-  __assume(nx%64==0);
-  __assume(ny%64==0);
-  __assume(height%64==0);
-
-  //reference image[j+i*(ny+2)] has unaligned access
-
   for (int j = 1; j < ny + 1; ++j) {
     for (int i = 1; i < nx + 1; ++i) {
-      tmp_image[j     + i       * height] = 
- 	 (image[j     + i       * height] * 0.6) + \
-	 (image[j     + (i - 1) * height] / mNoTen)    + \
-	 (image[j     + (i + 1) * height] / mNoTen)    + \
-	 (image[j - 1 + i       * height] / mNoTen)    + \
-	 (image[j + 1 + i       * height] / mNoTen);
-   }
+      tmp_image[j + i * height] =  image[j     + i       * height] * 3.0 / 5.0;
+      tmp_image[j + i * height] += image[j     + (i - 1) * height] * 0.5 / 5.0;
+      tmp_image[j + i * height] += image[j     + (i + 1) * height] * 0.5 / 5.0;
+      tmp_image[j + i * height] += image[j - 1 + i       * height] * 0.5 / 5.0;
+      tmp_image[j + i * height] += image[j + 1 + i       * height] * 0.5 / 5.0;
+    }
   }
 }
-/*
-LOOP BEGIN at stencil.c(104,11) inlined into stencil.c(42,3)
-	remark #15329: vectorization support:
-		 non-unit strided store was emulated for 	
-		 the variable <image[j+i*(ny+2)]>, 
-		 stride is unknown to compiler   [ stencil.c(105,13) ]
-
-            remark #15305: vectorization support: vector length 2
-            remark #15399: vectorization support: unroll factor set to 4
-            remark #15300: LOOP WAS VECTORIZED
-            remark #15453: unmasked strided stores: 1
-            remark #15475: --- begin vector cost summary ---
-            remark #15476: scalar cost: 4
-            remark #15477: vector cost: 3.000
-            remark #15478: estimated potential speedup: 1.320
-            remark #15488: --- end vector cost summary ---
-         LOOP END
-*/
 
 // Create the input image
 void init_image(const int nx, const int ny, const int width, const int height,
