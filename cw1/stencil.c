@@ -33,8 +33,8 @@ int main(int argc, char* argv[])
   int height = ny + 2;
 
   // Allocate the image
-  float* image = _mm_malloc(sizeof(float) * width * height,16);
-  float* tmp_image = _mm_malloc(sizeof(float) * width * height,16);
+  float* image = /*_mm_*/malloc(sizeof(float) * width * height/*,16*/);
+  float* tmp_image = /*_mm_*/malloc(sizeof(float) * width * height/*,16*/);
 
   // Set the input image
   init_image(nx, ny, width, height, image, tmp_image);
@@ -42,10 +42,9 @@ int main(int argc, char* argv[])
 
   // Call the stencil kernel
   double tic = wtime();
-  for (int i = 0; i < nx * ny; i+=4)
   for (int t = 0; t < niters; ++t) {
     stencil(nx, ny, width, height, image, tmp_image);
-//    stencil(nx, ny, width, height, tmp_image, image);
+    stencil(nx, ny, width, height, tmp_image, image);
   }
   double toc = wtime();
 
@@ -55,8 +54,8 @@ int main(int argc, char* argv[])
   printf("------------------------------------\n");
 
   output_image(OUTPUT_FILE, nx, ny, width, height, image);
-  _mm_free(image);
-  _mm_free(tmp_image);
+  /*_mm_*/free(image);
+  /*_mm_*/free(tmp_image);
 }
 
 void stencil(const int nx, const int ny, const int width, const int height,
@@ -64,25 +63,14 @@ void stencil(const int nx, const int ny, const int width, const int height,
 /*void stencil(const int nx, const int ny, const int width, const int height,
              double* image, double* tmp_image)*/
 {
-  __m128 a[(nx*ny)/4];
-  for (int j = 1; j < ny + 1; j+=1) {
-    for (int i = 1; i +8  < nx + 1; i+=8) {
-      a[i] = _mm_set_ps(image[j+i*height]);
-
-      __m128 v1 = _mm_load_ps((tmp_image[j + i * height]); 
-      __m128 v2 = _mm_load_ps(image[j+i * height]);
-      __m128 v3 = _mm_load_ps(image[j+(i-1) * height]);
-      __m128 v4 = _mm_load_ps(image[j+(i+1) * height]);
-      __m128 v5 = _mm_load_ps(image[j-1+i * height]);
-      __m128 v6 = _mm_load_ps(image[j+1+i * height]);
-/*
-* 0.3
-      tmp_image[j + i * height] = image[j     + i       * height];
-      tmp_image[j + i * height] += image[j     + (i - 1) * height];
-      tmp_image[j + i * height] += image[j     + (i + 1) * height];
-      tmp_image[j + i * height] += image[j - 1 + i       * height];
-      tmp_image[j + i * height] += image[j + 1 + i       * height];
-  */}
+  for (int j = 1; j < ny + 1; ++j) {
+    for (int i = 1; i < nx + 1; ++i) {
+      tmp_image[j + i * height] = image[j     + i       * height] * 3.0f / 5.0f;
+      tmp_image[j + i * height] += image[j     + (i - 1) * height] * 0.5f / 5.0f;
+      tmp_image[j + i * height] += image[j     + (i + 1) * height] * 0.5f / 5.0f;
+      tmp_image[j + i * height] += image[j - 1 + i       * height] * 0.5f / 5.0f;
+      tmp_image[j + i * height] += image[j + 1 + i       * height] * 0.5f / 5.0f;
+    }
   }
 }
 // Create the input image
