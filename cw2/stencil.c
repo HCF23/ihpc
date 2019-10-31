@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <malloc.h>
-#include <immintrin.h>
+#include <mpi.h>
+
 // Define output file name
 #define OUTPUT_FILE "stencil.pgm"
              
@@ -14,8 +15,14 @@ void output_image(const char* file_name, const int nx, const int ny,
                   const int width, const int height, float* image);
 double wtime(void);
 
+
 int main(int argc, char* argv[])
 {
+
+  MPI_Init(&argc, &argv);
+
+  int nprocs, rank;
+
   // Check usage
   if (argc != 4) {
     fprintf(stderr, "Usage: %s nx ny niters\n", argv[0]);
@@ -39,7 +46,11 @@ int main(int argc, char* argv[])
   // Set the input image
   init_image(nx, ny, width, height, image, tmp_image);
 
-
+/*
+  MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  printf("rank %d of %d\n", rank, nprocs);
+*/
   // Call the stencil kernel
   double tic = wtime();
   for (int t = 0; t < niters; ++t) {
@@ -56,6 +67,8 @@ int main(int argc, char* argv[])
   output_image(OUTPUT_FILE, nx, ny, width, height, image);
   _mm_free(image);
   _mm_free(tmp_image);
+
+  MPI_Finalize();
 }
 
 void stencil(const int nx, const int ny, const int width, const int height,
@@ -71,10 +84,7 @@ void stencil(const int nx, const int ny, const int width, const int height,
 
       for (int i = ib; i < ilim + 1; ++i) {
         for (int j = jb; j < jlim + 1; ++j) {
-/*
-      for (int j = 1; j < ny + 1; ++j) {
-        for (int i = 1; i < nx + 1; ++i) {
-*/          tmp_image[j + i * height]  = image[j     + i       * height] * 3.0f / 5.0f;
+          tmp_image[j + i * height]  = image[j     + i       * height] * 3.0f / 5.0f;
           tmp_image[j + i * height] += image[j     + (i - 1) * height] * 0.5f / 5.0f;
           tmp_image[j + i * height] += image[j     + (i + 1) * height] * 0.5f / 5.0f;
           tmp_image[j + i * height] += image[j - 1 + i       * height] * 0.5f / 5.0f;
