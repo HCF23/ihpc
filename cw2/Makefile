@@ -1,7 +1,5 @@
 stencil: stencil.c
-	icc -std=c99 -fast -Wall -qopt-report-phase=vec,loop,cg -qopt-report=5 -qopt-report-file=stdout -restrict $^ -o stencil_vec_reports
-	icc -g -std=c99 -fast -Wall  $^ -o stencil_dbg
-	icc -std=c99 -fast -Wall  $^ -o stencil
+	mpiicc -std=c99 -Wall -ipo -O3 -no-prec-div -fp-model fast=2 -xHost $^ -o stencil
 
 
 
