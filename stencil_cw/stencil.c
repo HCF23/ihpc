@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <malloc.h>
-#include <immintrin.h>
+
 // Define output file name
 #define OUTPUT_FILE "stencil.pgm"
              
@@ -60,10 +60,8 @@ int main(int argc, char* argv[])
 
 void stencil(const int nx, const int ny, const int width, const int height,
             float* image, float* tmp_image)
-/*void stencil(const int nx, const int ny, const int width, const int height,
-             double* image, double* tmp_image)*/
 {
-  int tile_size = 128;
+  int tile_size = 1024;
   for (int ib = 1; ib < nx + 1; ib+=tile_size) {
     for (int jb = 1; jb < ny + 1; jb+=tile_size) {
       const int jlim = (jb + tile_size > ny) ? ny : jb + tile_size;
@@ -71,10 +69,7 @@ void stencil(const int nx, const int ny, const int width, const int height,
 
       for (int i = ib; i < ilim + 1; ++i) {
         for (int j = jb; j < jlim + 1; ++j) {
-/*
-      for (int j = 1; j < ny + 1; ++j) {
-        for (int i = 1; i < nx + 1; ++i) {
-*/          tmp_image[j + i * height]  = image[j     + i       * height] * 3.0f / 5.0f;
+          tmp_image[j + i * height]  = image[j     + i       * height] * 3.0f / 5.0f;
           tmp_image[j + i * height] += image[j     + (i - 1) * height] * 0.5f / 5.0f;
           tmp_image[j + i * height] += image[j     + (i + 1) * height] * 0.5f / 5.0f;
           tmp_image[j + i * height] += image[j - 1 + i       * height] * 0.5f / 5.0f;
