@@ -1,0 +1,3 @@
+[submodule "mpitutorial"]
+	path = mpitutorial
+	url = ./mpitutorial/
