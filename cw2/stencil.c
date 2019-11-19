@@ -74,7 +74,22 @@ int main(int argc, char* argv[])
 }
 
 void decompose_domain(int domain_size, int world_rank, int world_size,
-			int * subdomain_start, int * subdomain_size);
+			int * subdomain_start, int * subdomain_size)
+{
+	//catch a nasty situation
+	if (world_size > domain_size)
+		MPI_Abort(MPI_COMM_WORLD,1);
+
+	//Split the domain into equal parts
+	*subdomain_size = domain_size / world_size;
+	*subdomain_start = domain_size / world_size * world_rank;
+
+	if (world_rank == world_size - 1) {
+		//If the last process, take on the remainder
+		*subdomain_size += domain_size % world_size;
+	}
+}
+
 
 void stencil(const int nx, const int ny, const int width, const int height,
             float* image, float* tmp_image)
