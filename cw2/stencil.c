@@ -47,8 +47,15 @@ int main(int argc, char* argv[])
 
   // Set the input image
   init_image(nx, ny, width, height, image, tmp_image);
-
-
+/*
+  decompose_domain(
+		int domain_size, 
+		rank, 
+		nprocs, 
+		int * subdomain_start, 
+		int * subdomain_size
+		);
+*/
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   printf("rank %d of %d\n", rank, nprocs);
