@@ -15,6 +15,8 @@ void output_image(const char* file_name, const int nx, const int ny,
                   const int width, const int height, float* image);
 double wtime(void);
 
+void decompose_domain(int domain_size, int world_rank, int world_size,
+			int * subdomain_start, int * subdomain_size);
 
 int main(int argc, char* argv[])
 {
@@ -70,6 +72,9 @@ int main(int argc, char* argv[])
 
   MPI_Finalize();
 }
+
+void decompose_domain(int domain_size, int world_rank, int world_size,
+			int * subdomain_start, int * subdomain_size);
 
 void stencil(const int nx, const int ny, const int width, const int height,
             float* image, float* tmp_image)
