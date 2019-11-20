@@ -16,7 +16,8 @@ void output_image(const char* file_name, const int nx, const int ny,
 double wtime(void);
 
 void decompose_domain(int domain_size, int world_rank, int world_size,
-			int * subdomain_start, int * subdomain_size);
+		      int * subdomain_start, int * subdomain_size);
+
 
 int main(int argc, char* argv[])
 {
@@ -24,6 +25,7 @@ int main(int argc, char* argv[])
   MPI_Init(&argc, &argv);
 
   int nprocs, rank;
+  int *subdomain_pos, *subdomain_max;
 
   // Check usage
   if (argc != 4) {
@@ -47,23 +49,25 @@ int main(int argc, char* argv[])
 
   // Set the input image
   init_image(nx, ny, width, height, image, tmp_image);
-/*
-  decompose_domain(
-		int domain_size, 
-		rank, 
-		nprocs, 
-		int * subdomain_start, 
-		int * subdomain_size
-		);
-*/
+
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
   printf("rank %d of %d\n", rank, nprocs);
+
+/*
+  decompose_domain(nx*ny*height, rank, nprocs, subdomain_pos, subdomain_max);
+*/
 
   // Call the stencil kernel
   double tic = wtime();
   for (int t = 0; t < niters; ++t) {
+    decompose_domain(nx*ny*height, rank, nprocs, &subdomain_pos, &subdomain_max);
+    
     stencil(nx, ny, width, height, image, tmp_image);
+    
+    decompose_domain(nx*ny*height, rank, nprocs, subdomain_pos, subdomain_max);
+    
     stencil(nx, ny, width, height, tmp_image, image);
   }
   double toc = wtime();
@@ -80,7 +84,7 @@ int main(int argc, char* argv[])
   MPI_Finalize();
 }
 
-void decompose_domain(int domain_size, int world_rank, int world_size,
+void decompose_domain(  int domain_size, int world_rank, int world_size,
 			int * subdomain_start, int * subdomain_size)
 {
 	//catch a nasty situation
@@ -99,13 +103,11 @@ void decompose_domain(int domain_size, int world_rank, int world_size,
 
 
 void stencil(const int nx, const int ny, const int width, const int height,
-            float* image, float* tmp_image)
-/*void stencil(const int nx, const int ny, const int width, const int height,
-             double* image, double* tmp_image)*/
+             float* image, float* tmp_image)
 {
   int tile_size = 1024;
-  for (int ib = 1; ib < nx + 1; ib+=tile_size) {
-    for (int jb = 1; jb < ny + 1; jb+=tile_size) {
+  for (int ib = 1; ib < nx + 1; ib += tile_size) {
+    for (int jb = 1; jb < ny + 1; jb += tile_size) {
       const int jlim = (jb + tile_size > ny) ? ny : jb + tile_size;
       const int ilim = (ib + tile_size > nx) ? nx : ib + tile_size;
 
@@ -121,9 +123,10 @@ void stencil(const int nx, const int ny, const int width, const int height,
     }
   }
 }
+
 // Create the input image
 void init_image(const int nx, const int ny, const int width, const int height,
-             float* image, float* tmp_image)
+                float* image, float* tmp_image)
 {
   // Zero everything
   for (int j = 0; j < ny + 2; ++j) {
@@ -192,3 +195,5 @@ double wtime(void)
   gettimeofday(&tv, NULL);
   return tv.tv_sec + tv.tv_usec * 1e-6;
 }
+
+
