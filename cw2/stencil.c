@@ -8,20 +8,29 @@
 #define OUTPUT_FILE "stencil.pgm"
 #define TILE_SIZE (1024)
              
-void stencil(const int nx, const int ny, const int width, const int height,
-             float* image, float* tmp_image, int a, int b);
+void stencil(	const int nx, const int ny, 
+		const int width, const int height,
+             	float* image, float* tmp_image, 
+		int subdomain_start, int subdomain_size, int subdomain_end,
+		float* tx, float* rx, int message_size);
 
-void init_image(const int nx, const int ny, const int width, const int height,
+void init_image(const int nx, const int ny, 
+		const int width, const int height,
                 float* image, float* tmp_image, 
-		int subdomain_start, int subdomain_max);
+		int subdomain_start, int subdomain_size, int subdomain_end,
+		float* tx, float* rx, int message_size);
 
 void output_image(const char* file_name, const int nx, const int ny,
-                  const int width, const int height, float* image);
+                  const int width, const int height, 
+		  float* image,
+ 		  int subdomain_start, int subdomain_size, int subdomain_end,
+		  float* tx, float* rx, int message_size);
 
 double wtime(void);
 
 void decompose_domain(int domain_size, int world_rank, int world_size,
-		      int * subdomain_start, int * subdomain_size);
+		      int * subdomain_start, int * subdomain_size,
+	    	      int * subdomain_end);
 
 
 int main(int argc, char* argv[])
@@ -46,38 +55,55 @@ int main(int argc, char* argv[])
   // stencil
   int width = nx + 2;
   int height = ny + 2;
-  
-  int *subdomain_max = malloc(sizeof(int));
-  int *subdomain_start = malloc(sizeof(int));
+ 
+  // for every dx, pass all of y 
+  int message_size = height*sizeof(float); 
 
-  // Allocate the image
+  int *rank_domain_size = malloc(sizeof(int));
+  int *rank_domain_start = malloc(sizeof(int));
+  int *rank_domain_end = malloc(sizeof(int));
+
+  // Allocate the image, nice and aligned, like.
   float* image = _mm_malloc(sizeof(float) * width * height, 16);
   float* tmp_image = _mm_malloc(sizeof(float) * width * height, 16);
 
+  // Allocate some buffers for message passing between procs
+  float* txbuf = malloc(message_size);
+  float* rxbuf = malloc(message_size);
 
+  // Work out 'whereami' | 'whoami' for this proc
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+  printf(":%d\trank:%d/%d\t start:%d   sz:%d    end:%d\n", 
+	__LINE__, rank, nprocs, 
+	*rank_domain_start, 
+	*rank_domain_size, 
+	*rank_domain_end);
 
-  printf(":%d\trank %d of %d\n", __LINE__, rank, nprocs);
   //just decompose x
   //allow full y iteration
-  decompose_domain(nx, rank, nprocs, subdomain_start, subdomain_max);
+  //the resultant subdomains are directly proportional to the current rank
+  decompose_domain(nx, rank, nprocs, 
+		   rank_domain_start, 
+		   rank_domain_size, 
+		   rank_domain_end);
 
   // Set the input image
   init_image(	nx, ny, width, height, image, tmp_image, 
-		*subdomain_start, *subdomain_max);
-/*  
-  printf(":%d\t\t start:%d   sz:%d\n", __LINE__, *subdomain_start, *subdomain_max);
-  printf(":%d\trank %d of %d\n", __LINE__, rank, nprocs);
+		*rank_domain_start, *rank_domain_size, *rank_domain_end,
+		txbuf, rxbuf, message_size);
 
+  printf(":%d\trank:%d/%d\t start:%d   sz:%d    end:%d\n", 
+	__LINE__, rank, nprocs, *rank_domain_start, *rank_domain_size, *rank_domain_end);
+/*
   // Call the stencil kernel
   double tic = wtime();
   for (int t = 0; t < niters; ++t) {
     printf(":%d\trank %d of %d\n", __LINE__, rank, nprocs);
-    stencil(nx, ny, width, height, image, tmp_image, *subdomain_start, *subdomain_max);    
+    stencil(nx, ny, width, height, image, tmp_image, *subdomain_start, *subdomain_size);    
     printf(":%d\trank %d of %d\n", __LINE__, rank, nprocs);
-    stencil(nx, ny, width, height, tmp_image, image, *subdomain_start, *subdomain_max);
+    stencil(nx, ny, width, height, tmp_image, image, *subdomain_start, *subdomain_size);
   }
   double toc = wtime();
 
@@ -86,50 +112,59 @@ int main(int argc, char* argv[])
   printf(" runtime: %lf s\n", toc - tic);
   printf("------------------------------------\n");
 */
-  output_image(OUTPUT_FILE, nx, ny, width, height, image);
-  
+  printf(":%d\trank:%d/%d\t start:%d   sz:%d    end:%d\n", 
+	__LINE__, rank, nprocs, *rank_domain_start, *rank_domain_size, *rank_domain_end);
+ 
+  output_image( OUTPUT_FILE, nx, ny, 
+		width, height, 
+		image,
+		*rank_domain_start, *rank_domain_size, *rank_domain_end,
+		txbuf, rxbuf, message_size);
+
+  printf(":%d\trank:%d/%d\t start:%d   sz:%d    end:%d\n", 
+	__LINE__, rank, nprocs, *rank_domain_start, *rank_domain_size, *rank_domain_end);
+ 
   _mm_free(image);
   _mm_free(tmp_image);
   
-  free(subdomain_start); 
-  free(subdomain_max);
+  free(rank_domain_size);
+  free(rank_domain_start); 
+  free(rank_domain_end); 
   
   MPI_Finalize();
 }
 
 void decompose_domain(  int domain_size, int world_rank, int world_size,
-			int * subdomain_start, int * subdomain_size)
+			int * subdomain_start, int * subdomain_size,
+			int * subdomain_end)
 {
-  int rank = world_rank;
-  int nprocs = world_size;
-  printf(":%d\trank %d of %d\n", __LINE__, rank, nprocs);
    //catch a nasty situation
    if (world_size > domain_size)
       MPI_Abort(MPI_COMM_WORLD,1);
    
-   printf(":%d\trank %d of %d\n", __LINE__, rank, nprocs);
    //Split the domain into equal parts
    *subdomain_size = domain_size / world_size;
    
-   printf(":%d\trank %d of %d\n", __LINE__, rank, nprocs);
    if (world_rank == 0) {
       *subdomain_start = 0;
    } else {
       *subdomain_start = domain_size / world_size * world_rank;
-   }   
-   
-   printf(":%d\t\t start:%d   sz:%d\n", __LINE__, *subdomain_start, *subdomain_size);
-   printf(":%d\trank %d of %d\n", __LINE__, rank, nprocs);
+   }  
+
    if (world_rank == world_size - 1) {
       //If the last process, take on the remainder
       *subdomain_size += domain_size % world_size;
    }
+
+   *subdomain_end = *subdomain_start + *subdomain_size;
 }
 
 
-void stencil(const int nx, const int ny, const int width, const int height,
-             float* image, float* tmp_image, 
-	     int subdomain_start, int subdomain_size)
+void stencil(   const int nx, const int ny, 
+		const int width, const int height,
+             	float* image, float* tmp_image, 
+		int subdomain_start, int subdomain_size, int subdomain_end,
+		float* tx, float* rx, int message_size);
 {
   int tile_size = TILE_SIZE;
   int subdomain_max = subdomain_start + subdomain_size;
@@ -154,9 +189,11 @@ void stencil(const int nx, const int ny, const int width, const int height,
 }
 
 // Create the input image
-void init_image(const int nx, const int ny, const int width, const int height,
-                float* image, float* tmp_image,
-	        int subdomain_start, int subdomain_size)
+void init_image(const int nx, const int ny, 
+		const int width, const int height,
+             	float* image, float* tmp_image, 
+		int subdomain_start, int subdomain_size, int subdomain_end,
+		float* tx, float* rx, int message_size);
 {
   // Zero everything
   for (int j = 0; j < ny + 2; ++j) {
@@ -167,7 +204,6 @@ void init_image(const int nx, const int ny, const int width, const int height,
   }
 
   const int tile_size = TILE_SIZE;
-  int subdomain_max = subdomain_start + subdomain_size;
   //split x up according to rank
   //then for each x iterate over the y
   for (int ib = subdomain_start; ib < subdomain_max + 1; ib += tile_size) {
@@ -188,7 +224,10 @@ void init_image(const int nx, const int ny, const int width, const int height,
 
 // Routine to output the image in Netpbm grayscale binary image format
 void output_image(const char* file_name, const int nx, const int ny,
-                  const int width, const int height, float* image)
+		const int width, const int height,
+             	float* image,  
+		int subdomain_start, int subdomain_size, int subdomain_end,
+		float* tx, float* rx, int message_size);
 {
   // Open output file
   FILE* fp = fopen(file_name, "w");
